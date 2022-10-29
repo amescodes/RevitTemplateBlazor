@@ -1,0 +1,55 @@
+﻿<Project DefaultTargets="Build;ILRepacker" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
+  <PropertyGroup>
+    <Configurations>Debug;Release;2021;2022;2023</Configurations>
+    <RuntimeIdentifiers>win</RuntimeIdentifiers>
+    <!-- Forcibly set platform to 'x64' and ignore architecture-related problems -->
+    <PlatformTarget>x64</PlatformTarget>
+    <Platforms>x64</Platforms>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+    <!-- Invert the behavior of new .csproj format - exclude files by default -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <!-- Define handy symbols to use in the code in order to accommodate different Revit versions,
+    e.g. by wrapping legacy / deprecated API calls with #if REVIT2014 | REVIT2015 -->
+    <PreprocessorDefinitions>$(DefineConstants)</PreprocessorDefinitions>
+    <!-- Multiple targets can cause obj folder locking lby concurrent builds -->
+    <BuildInParallel>false</BuildInParallel>
+    <XamlDebuggingInformation>True</XamlDebuggingInformation>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+
+  <Import Project="..\RevitTemplateWeb\RevitTemplateWeb.projitems" Label="Shared" />
+
+  <PropertyGroup>
+    <RootNamespace>RevitTemplateWeb</RootNamespace>
+    <AssemblyName>RevitTemplateWeb</AssemblyName>
+    <Authors>RevitTemplateWeb</Authors>
+    <PackageId>RVT_TEMPLATE_WEB</PackageId>
+    <Company>ames codes</Company>
+    <PackageProjectUrl>ames.codes</PackageProjectUrl>
+    <Product>Revit Addin Template </Product>
+    <Version>0.0.0.1</Version>
+    <NeutralLanguage>en</NeutralLanguage>
+    <AssemblyVersion>0.0.0.1</AssemblyVersion>
+    <FileVersion>0.0.0.1</FileVersion>
+    <Copyright>Copyright © 2022 ames</Copyright>
+    <IsPublishable>False</IsPublishable>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(Configuration)' == '2021' ">
+    <TargetFrameworks>net48</TargetFrameworks>
+    <DefineConstants>DEBUG;REVIT2021</DefineConstants>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(Configuration)' == '2022' ">
+    <TargetFrameworks>net48</TargetFrameworks>
+    <DefineConstants>DEBUG;REVIT2022</DefineConstants>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(Configuration)' == '2023' ">
+    <TargetFrameworks>net48</TargetFrameworks>
+    <DefineConstants>DEBUG;REVIT2023</DefineConstants>
+  </PropertyGroup>
+
+</Project>

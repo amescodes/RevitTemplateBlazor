@@ -1,0 +1,67 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RevitTemplateWeb2021", "RevitTemplateWeb2021\RevitTemplateWeb2021.csproj", "{639903C9-6F17-434E-9FCA-6CA9C1E6DF51}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "RevitTemplateWeb", "RevitTemplateWeb\RevitTemplateWeb.shproj", "{E8683D34-131A-4931-B7DD-D729DD399021}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{24CD68C2-CAEB-4A20-BBDA-16AB074269D5}"
+	ProjectSection(SolutionItems) = preProject
+		build\AddinManifest.targets = build\AddinManifest.targets
+		build\Project.props = build\Project.props
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RevitTemplateWeb2022", "RevitTemplateWeb2022\RevitTemplateWeb2022.csproj", "{FEB5512D-8A03-4BC4-8628-6251CFD45EC3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RevitTemplateWeb2023", "RevitTemplateWeb2023\RevitTemplateWeb2023.csproj", "{ACAB9DB0-EB07-4E37-9150-7BCE60130AAB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		2021|x64 = 2021|x64
+		2022|x64 = 2022|x64
+		2023|x64 = 2023|x64
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{639903C9-6F17-434E-9FCA-6CA9C1E6DF51}.2021|x64.ActiveCfg = 2021|x64
+		{639903C9-6F17-434E-9FCA-6CA9C1E6DF51}.2021|x64.Build.0 = 2021|x64
+		{639903C9-6F17-434E-9FCA-6CA9C1E6DF51}.2022|x64.ActiveCfg = 2022|x64
+		{639903C9-6F17-434E-9FCA-6CA9C1E6DF51}.2023|x64.ActiveCfg = 2023|x64
+		{639903C9-6F17-434E-9FCA-6CA9C1E6DF51}.Debug|x64.ActiveCfg = Debug|x64
+		{639903C9-6F17-434E-9FCA-6CA9C1E6DF51}.Debug|x64.Build.0 = Debug|x64
+		{639903C9-6F17-434E-9FCA-6CA9C1E6DF51}.Release|x64.ActiveCfg = Release|x64
+		{639903C9-6F17-434E-9FCA-6CA9C1E6DF51}.Release|x64.Build.0 = Release|x64
+		{FEB5512D-8A03-4BC4-8628-6251CFD45EC3}.2021|x64.ActiveCfg = Debug|x64
+		{FEB5512D-8A03-4BC4-8628-6251CFD45EC3}.2021|x64.Build.0 = Debug|x64
+		{FEB5512D-8A03-4BC4-8628-6251CFD45EC3}.2022|x64.ActiveCfg = Debug|x64
+		{FEB5512D-8A03-4BC4-8628-6251CFD45EC3}.2022|x64.Build.0 = Debug|x64
+		{FEB5512D-8A03-4BC4-8628-6251CFD45EC3}.2023|x64.ActiveCfg = Debug|x64
+		{FEB5512D-8A03-4BC4-8628-6251CFD45EC3}.2023|x64.Build.0 = Debug|x64
+		{FEB5512D-8A03-4BC4-8628-6251CFD45EC3}.Debug|x64.ActiveCfg = Debug|x64
+		{FEB5512D-8A03-4BC4-8628-6251CFD45EC3}.Debug|x64.Build.0 = Debug|x64
+		{FEB5512D-8A03-4BC4-8628-6251CFD45EC3}.Release|x64.ActiveCfg = Release|x64
+		{FEB5512D-8A03-4BC4-8628-6251CFD45EC3}.Release|x64.Build.0 = Release|x64
+		{ACAB9DB0-EB07-4E37-9150-7BCE60130AAB}.2021|x64.ActiveCfg = Debug|x64
+		{ACAB9DB0-EB07-4E37-9150-7BCE60130AAB}.2021|x64.Build.0 = Debug|x64
+		{ACAB9DB0-EB07-4E37-9150-7BCE60130AAB}.2022|x64.ActiveCfg = Debug|x64
+		{ACAB9DB0-EB07-4E37-9150-7BCE60130AAB}.2022|x64.Build.0 = Debug|x64
+		{ACAB9DB0-EB07-4E37-9150-7BCE60130AAB}.2023|x64.ActiveCfg = Debug|x64
+		{ACAB9DB0-EB07-4E37-9150-7BCE60130AAB}.2023|x64.Build.0 = Debug|x64
+		{ACAB9DB0-EB07-4E37-9150-7BCE60130AAB}.Debug|x64.ActiveCfg = Debug|x64
+		{ACAB9DB0-EB07-4E37-9150-7BCE60130AAB}.Debug|x64.Build.0 = Debug|x64
+		{ACAB9DB0-EB07-4E37-9150-7BCE60130AAB}.Release|x64.ActiveCfg = Release|x64
+		{ACAB9DB0-EB07-4E37-9150-7BCE60130AAB}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {76C5BF1E-0A8A-4652-B36D-00A09F24B90B}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		RevitTemplateWeb\RevitTemplateWeb.projitems*{e8683d34-131a-4931-b7dd-d729dd399021}*SharedItemsImports = 13
+	EndGlobalSection
+EndGlobal
