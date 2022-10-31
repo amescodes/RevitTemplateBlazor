@@ -28,7 +28,7 @@ class Build : NukeBuild
 
     [Parameter("Configuration to build. Use the Revit version year (2021, 2022, 2023) as a parameter to only build for one version.")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
-    bool IsReleaseBuild => (Configuration.Equals(Configuration.Release));
+    bool IsReleaseBuild => Configuration.Equals(Configuration.Release);
 
     string OutputDirectory => IsReleaseBuild ? RootDirectory / "release" : RootDirectory / "output";
 
@@ -71,7 +71,7 @@ class Build : NukeBuild
     Target CreateAddinManifest => _ => _
         .Executes(() =>
         {
-            IList<Project> projectsToBuild = GetProjectsToBuild();
+            IList<Project> projectsToBuild = GetRevitProjectsToBuild();
 
             foreach (Project project in projectsToBuild)
             {
@@ -90,7 +90,14 @@ class Build : NukeBuild
         .DependsOn(CreateAddinManifest)
         .Executes(() =>
         {
-            IList<Project> projectsToBuild = GetProjectsToBuild();
+            string uiOutputDir = Path.Combine(OutputDirectory, "UI");
+            Project uiProject = Solution.GetProject($@"{Solution.Name}.UI");
+            DotNetBuild(_ => _
+                    .SetProjectFile(uiProject)
+                    .SetConfiguration(Configuration)
+                    .SetOutputDirectory(uiOutputDir));
+            
+            IList<Project> projectsToBuild = GetRevitProjectsToBuild();
             foreach (Project project in projectsToBuild)
             {
                 string revitVersion = project.GetProperty("RevitVersion");
@@ -102,10 +109,15 @@ class Build : NukeBuild
                     .SetConfiguration(Configuration)
                     .SetFramework(project.GetProperty("Framework"))
                     .SetOutputDirectory(versionDir.FullName));
+                
+                if (Directory.Exists(uiOutputDir))
+                {
+                    CopyFilesRecursively(uiOutputDir,Path.Combine(versionDirPath,"UI"));
+                }
             }
         });
 
-    IList<Project> GetProjectsToBuild()
+    IList<Project> GetRevitProjectsToBuild()
     {
         IList<Project> projectsToBuild = new List<Project>();
 
@@ -124,12 +136,28 @@ class Build : NukeBuild
         else
         {
             foreach (Project project in Solution.AllProjects.Where(p=>!p.Name.Equals("_build") &&
-                                                                      !p.Name.EndsWith("Shared")))
+                                                                      !p.Name.EndsWith("Shared") &&
+                                                                      !p.Name.EndsWith("UI")))
             {
                 projectsToBuild.Add(project);
             }
         }
 
         return projectsToBuild;
+    }
+
+    private static void CopyFilesRecursively(string sourcePath, string targetPath)
+    {
+        //Now Create all of the directories
+        foreach (string dirPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
+        {
+            Directory.CreateDirectory(dirPath.Replace(sourcePath, targetPath));
+        }
+
+        //Copy all the files & Replaces any files with the same name
+        foreach (string newPath in Directory.GetFiles(sourcePath, "*.*",SearchOption.AllDirectories))
+        {
+            File.Copy(newPath, newPath.Replace(sourcePath, targetPath), true);
+        }
     }
 }

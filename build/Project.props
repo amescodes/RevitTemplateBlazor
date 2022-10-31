@@ -22,12 +22,8 @@
     <RootNamespace>RevitTemplateWeb</RootNamespace>
   </PropertyGroup>
 
-  <!--<PropertyGroup>
-    --><!-- Override 'OutputPath' to Debug/Release + Revit version --><!--
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <OutputPath>.\bin\$(Configuration)\$(RevitVersion)</OutputPath>
-    <OutputPath Condition="$(Configuration) != 'Debug' And $(Configuration) != 'Release' ">.\bin\$(Configuration)</OutputPath>
-  </PropertyGroup>-->
-
+  <ItemGroup>
+    <PackageReference Include="Revit.Async" Version="*" />
+  </ItemGroup>
 
 </Project>

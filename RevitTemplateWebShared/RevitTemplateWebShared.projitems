@@ -9,7 +9,10 @@
     <Import_RootNamespace>RevitTemplateWebShared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)ExtApp.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)OpenUIExtCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Revit\ExtApp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Revit\OpenUIExtCommand.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Revit\" />
   </ItemGroup>
 </Project>
