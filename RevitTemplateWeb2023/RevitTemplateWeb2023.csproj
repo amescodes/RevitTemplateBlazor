@@ -2,11 +2,12 @@
 <Project DefaultTargets="Build" Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\build\Project.props" />
-  <Import Project="..\RevitTemplateWeb\RevitTemplateWeb.projitems" Label="Shared" />
+  <Import Project="..\RevitTemplateWebShared\RevitTemplateWebShared.projitems" Label="Shared" />
 
   <PropertyGroup>
     <TargetFrameworks>net48</TargetFrameworks>
-    <PackageId>RVT_TEMPLATE_WEB</PackageId>
+    <DefineConstants>REVIT2023</DefineConstants>
+    <RevitVersion>2023</RevitVersion>
   </PropertyGroup>
 
   <ItemGroup>

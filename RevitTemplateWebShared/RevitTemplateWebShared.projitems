@@ -3,12 +3,13 @@
   <PropertyGroup>
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <SharedGUID>e8683d34-131a-4931-b7dd-d729dd399021</SharedGUID>
+    <SharedGUID>4f610bf5-201e-4193-b3f5-6424cd53e46c</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>RevitTemplateWeb</Import_RootNamespace>
+    <Import_RootNamespace>RevitTemplateWebShared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ExtApp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OpenUIExtCommand.cs" />
   </ItemGroup>
 </Project>
