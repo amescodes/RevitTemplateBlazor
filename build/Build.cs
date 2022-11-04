@@ -206,8 +206,8 @@ class Build : NukeBuild
         }
 
         string versionDirPath = BuildRevitProject(revitVersion);
-
-        CopyFilesRecursively(nonRevitDirPath, versionDirPath);
+        string nestedDllDirPath = Path.Combine(versionDirPath, Solution.Name);
+        CopyFilesRecursively(nonRevitDirPath, nestedDllDirPath);
 
         CreateAddinManifest(revitVersion);
     }
@@ -262,7 +262,6 @@ class Build : NukeBuild
     void CreateAddinManifest(string revitVersion)
     {
         string assemblyName = Solution.Name;
-        //string assemblyName = revitProject.GetProperty("AssemblyName");
         string relativeDllLocation = IsReleaseBuild ? $"{assemblyName}.dll" : $"{assemblyName}/{assemblyName}.dll";
         string finalAddinContents = AddinFileContents.Replace("RELATIVE_DLL_LOCATION", relativeDllLocation);
 
@@ -278,9 +277,14 @@ class Build : NukeBuild
             try
             {
                 if (project.GetProperty("RevitProject") is string isRevitProject &&
-                    isRevitProject.Equals("true"))
+                    isRevitProject.Equals("true") ||
+                    project.Name.Equals("_build") ||
+                    project.Path.Name.EndsWith(".shproj"))
                 {
+                    continue;
                 }
+
+                projectsToBuild.Add(project);
             }
             catch
             {
