@@ -6,17 +6,6 @@
     "build": {
       "type": "object",
       "properties": {
-        "Configuration": {
-          "type": "string",
-          "description": "Configuration to build. Use the Revit version year (2021, 2022, 2023) as a parameter to only build for one version",
-          "enum": [
-            "Debug",
-            "Release",
-            "Revit2021",
-            "Revit2022",
-            "Revit2023"
-          ]
-        },
         "Continue": {
           "type": "boolean",
           "description": "Indicates to continue a previously failed build attempt"
@@ -76,8 +65,12 @@
             "type": "string",
             "enum": [
               "Clean",
-              "Compile",
-              "CreateAddinManifest",
+              "Compile2021",
+              "Compile2022",
+              "Compile2023",
+              "CompileAll",
+              "CompileOther",
+              "CopyToAddinDirectory",
               "Restore"
             ]
           }
@@ -93,8 +86,12 @@
             "type": "string",
             "enum": [
               "Clean",
-              "Compile",
-              "CreateAddinManifest",
+              "Compile2021",
+              "Compile2022",
+              "Compile2023",
+              "CompileAll",
+              "CompileOther",
+              "CopyToAddinDirectory",
               "Restore"
             ]
           }
