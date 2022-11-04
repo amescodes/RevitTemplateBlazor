@@ -1,33 +1,38 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  
-  <PropertyGroup>
-    <Configurations>Debug;Release;2021;2022;2023</Configurations>
-    <RuntimeIdentifiers>win</RuntimeIdentifiers>
-    <!-- Forcibly set platform to 'x64' and ignore architecture-related problems -->
-    <PlatformTarget>x64</PlatformTarget>
-    <Platforms>x64</Platforms>
-    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
-    <!-- Invert the behavior of new .csproj format - exclude files by default -->
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <EnableDefaultItems>false</EnableDefaultItems>
-    <!-- Define handy symbols to use in the code in order to accommodate different Revit versions,
+
+	<PropertyGroup>
+		<Configurations>Debug;Release;2021;2022;2023</Configurations>
+		<RuntimeIdentifiers>win</RuntimeIdentifiers>
+		<!-- Forcibly set platform to 'x64' and ignore architecture-related problems -->
+		<PlatformTarget>x64</PlatformTarget>
+		<Platforms>x64</Platforms>
+		<ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+		<!-- Invert the behavior of new .csproj format - exclude files by default -->
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+		<EnableDefaultItems>false</EnableDefaultItems>
+		<!-- Define handy symbols to use in the code in order to accommodate different Revit versions,
     e.g. by wrapping legacy / deprecated API calls with #if REVIT2014 | REVIT2015 -->
-    <PreprocessorDefinitions>$(DefineConstants);DEBUG</PreprocessorDefinitions>
-    <!-- Multiple targets can cause obj folder locking lby concurrent builds -->
-    <BuildInParallel>false</BuildInParallel>
-    <XamlDebuggingInformation>True</XamlDebuggingInformation>
-    <DebugType>full</DebugType>
+		<PreprocessorDefinitions>$(DefineConstants);DEBUG</PreprocessorDefinitions>
+		<!-- Multiple targets can cause obj folder locking lby concurrent builds -->
+		<BuildInParallel>false</BuildInParallel>
+		<XamlDebuggingInformation>True</XamlDebuggingInformation>
+		<DebugType>full</DebugType>
 
-    <AssemblyName>RevitTemplateWeb</AssemblyName>
-    <RootNamespace>RevitTemplateWeb</RootNamespace>
-  </PropertyGroup>
+		<AssemblyName>RevitTemplateWeb</AssemblyName>
+		<RootNamespace>RevitTemplateWeb</RootNamespace>
+	</PropertyGroup>
 
-  <!--<PropertyGroup>
-    --><!-- Override 'OutputPath' to Debug/Release + Revit version --><!--
+	<!--<PropertyGroup>
+    -->
+	<!-- Override 'OutputPath' to Debug/Release + Revit version -->
+	<!--
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>.\bin\$(Configuration)\$(RevitVersion)</OutputPath>
     <OutputPath Condition="$(Configuration) != 'Debug' And $(Configuration) != 'Release' ">.\bin\$(Configuration)</OutputPath>
   </PropertyGroup>-->
+	<ItemGroup>
+		<PackageReference Include="Autodesk.Revit.SDK" Version="$(RevitVersion).*" />
+	</ItemGroup>
 
 
 </Project>

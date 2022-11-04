@@ -71,7 +71,7 @@ class Build : NukeBuild
             string pcAddinPath2021 = Path.Combine(pcAddinPath, $@"2021\\{Solution.Name}");
             if (Directory.Exists(pcAddinPath2021))
             {
-                Directory.Delete(pcAddinPath2021);
+                Directory.Delete(pcAddinPath2021,true);
 
                 string addinFile2021 = Path.Combine(pcAddinPath, $@"2021\\{Solution.Name}.addin");
                 if (File.Exists(addinFile2021))
@@ -83,7 +83,7 @@ class Build : NukeBuild
             string pcAddinPath2022 = Path.Combine(pcAddinPath, $@"2022\\{Solution.Name}");
             if (Directory.Exists(pcAddinPath2022))
             {
-                Directory.Delete(pcAddinPath2022);
+                Directory.Delete(pcAddinPath2022,true);
 
                 string addinFile2022 = Path.Combine(pcAddinPath, $@"2022\\{Solution.Name}.addin");
                 if (File.Exists(addinFile2022))
@@ -96,7 +96,7 @@ class Build : NukeBuild
             string pcAddinPath2023 = Path.Combine(pcAddinPath, $@"2023\\{Solution.Name}");
             if (Directory.Exists(pcAddinPath2023))
             {
-                Directory.Delete(pcAddinPath2023);
+                Directory.Delete(pcAddinPath2023,true);
 
                 string addinFile2023 = Path.Combine(pcAddinPath, $@"2023\\{Solution.Name}.addin");
                 if (File.Exists(addinFile2023))
