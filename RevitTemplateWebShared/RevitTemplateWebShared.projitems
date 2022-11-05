@@ -11,5 +11,6 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ExtApp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OpenUIExtCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\GreeterService.cs" />
   </ItemGroup>
 </Project>
