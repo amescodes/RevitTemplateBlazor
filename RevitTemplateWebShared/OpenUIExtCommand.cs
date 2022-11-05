@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
@@ -38,14 +40,6 @@ namespace RevitTemplateWeb
             //        }
             //    }
             //}
-
-            // execute the browser window process
-            Process process = new Process();
-            process.StartInfo.FileName = "TestgRPC.Client.exe";
-            //process.StartInfo.Arguments = ApplicationClass.messagehandler.Handle.ToString(); // pass the MessageHandler's window handle the the process as a command line argument
-            process.Start();
-
-            //MessageHandler.browser_pid = process.Id; // grab the PID so we can kill the process if required;
             
             Server server = new Server
             {
@@ -54,11 +48,24 @@ namespace RevitTemplateWeb
             };
             server.Start();
 
-            Console.WriteLine("Greeter server listening on port " + 7287);
-            Console.WriteLine("Press any key to stop the server...");
-            Console.ReadKey();
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            string assemblyDllPath = assembly.Location.Replace($"{assembly.ManifestModule.Name}","UI");
+//#if RELEASE
+//            string uiProcessPath = Path.Combine(Assembly.GetAssembly(typeof(OpenUIExtCommand)).Location, "UI\\RevitTemplateWeb.UI.exe");
+//#else
+//            string uiProcessPath = "C:\\Users\\amesh\\source\\repos\\RevitTemplate-amescodes\\RevitTemplateWeb.UI\\bin\\Debug\\net6.0\\RevitTemplateWeb.UI.exe";
+//#endif
 
-            server.ShutdownAsync().Wait();
+            string uiProcessPath = Path.Combine(assemblyDllPath,"gRPC.Client.exe");
+            // execute the browser window process
+            Process process = new Process();
+            process.StartInfo.FileName = uiProcessPath;
+            //process.StartInfo.Arguments = ApplicationClass.messagehandler.Handle.ToString(); // pass the MessageHandler's window handle the the process as a command line argument
+            process.Start();
+
+            //MessageHandler.browser_pid = process.Id; // grab the PID so we can kill the process if required;
+
+            //server.ShutdownAsync().Wait();
         
             return Result.Succeeded;
         }

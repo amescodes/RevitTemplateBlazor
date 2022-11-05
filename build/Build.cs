@@ -36,7 +36,7 @@ class Build : NukeBuild
     public Guid ClientId => new Guid("513061CC-801C-41B1-BD00-887E5493EA3C");
     public string AppName => "Revit Addin Template - Web";
     public string ExternalAppClassName => "RevitTemplateWeb.ExtApp"; //? potential to automate
-
+    
     public string RevitVendorId => "AMES_CODES";
     public string RevitVendorDescription => "ames.codes";
 
@@ -57,6 +57,90 @@ class Build : NukeBuild
 
     public static int Main() => Execute<Build>(x => x.CompileAll);
 
+    Target Compile2021 => _ => _
+        .DependsOn(CompileOther)
+        .Executes(() =>
+        {
+            CompileByVersion("2021");
+        });
+
+    Target Debug2021 => _ => _
+        .DependsOn(Compile2021)
+        .DependsOn(CopyToAddinDirectory);
+
+    Target Compile2022 => _ => _
+        .DependsOn(CompileOther)
+        .Executes(() =>
+        {
+            CompileByVersion("2022");
+        });
+    
+    Target Debug2022 => _ => _
+        .DependsOn(Compile2022)
+        .DependsOn(CopyToAddinDirectory);
+
+    Target Compile2023 => _ => _
+        .DependsOn(CompileOther)
+        .Executes(() =>
+        {
+            CompileByVersion("2023");
+        });
+
+    Target Debug2023 => _ => _
+        .DependsOn(Compile2023)
+        .DependsOn(CopyToAddinDirectory);
+
+    Target CompileOther => _ => _
+        .DependsOn(Clean)
+        .Executes(() =>
+        {
+            IEnumerable<Project> nonRevitProjects = GetNonRevitProjectsToBuild();
+            string nonRevitDirPath = Path.Combine(OutputDirectory, "UI");
+            DirectoryInfo nonRevitDir = Directory.CreateDirectory(nonRevitDirPath);
+            foreach (Project nonRevitProject in nonRevitProjects)
+            {
+                try
+                {
+                    DotNetBuild(_ => _
+                        .SetProjectFile(nonRevitProject)
+                        .SetConfiguration(Configuration.Debug)
+                        .SetOutputDirectory(nonRevitDir.FullName));
+                }
+                catch
+                {
+                    // keep try/catch until figuring out what project/why it's breaking
+                }
+            }
+        });
+
+    Target CopyToAddinDirectory => _ => _
+        .Executes(() =>
+        {
+            string commonPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+            string pcAddinPath = Path.Combine(commonPath, $@"Autodesk\\Revit\Addins");
+
+            // 2021
+            string outputPath2021 = Path.Combine(OutputDirectory, "2021");
+            if (Directory.Exists(outputPath2021))
+            {
+                string pcAddinPath2021 = Path.Combine(pcAddinPath, $@"2021");
+                CopyFilesRecursively(outputPath2021, pcAddinPath2021);
+            }
+            // 2022
+            string outputPath2022 = Path.Combine(OutputDirectory, "2022");
+            if (Directory.Exists(outputPath2022))
+            {
+                string pcAddinPath2022 = Path.Combine(pcAddinPath, $@"2022");
+                CopyFilesRecursively(outputPath2022, pcAddinPath2022);
+            }
+            // 2023
+            string outputPath2023 = Path.Combine(OutputDirectory, "2023");
+            if (Directory.Exists(outputPath2023))
+            {
+                string pcAddinPath2023 = Path.Combine(pcAddinPath, $@"2023");
+                CopyFilesRecursively(outputPath2023, pcAddinPath2023);
+            }
+        });
 
     Target Clean => _ => _
         .Before(Restore)
@@ -124,89 +208,17 @@ class Build : NukeBuild
         .DependsOn(Compile2022)
         .DependsOn(Compile2023);
 
-    Target Compile2021 => _ => _
-        .DependsOn(CompileOther)
-        .Executes(() =>
-        {
-            CompileByVersion("2021");
-        });
-
-    Target Compile2022 => _ => _
-        .DependsOn(CompileOther)
-        .Executes(() =>
-        {
-            CompileByVersion("2022");
-        });
-
-    Target Compile2023 => _ => _
-        .DependsOn(CompileOther)
-        .Executes(() =>
-        {
-            CompileByVersion("2023");
-        });
-
-    Target CompileOther => _ => _
-        .DependsOn(Clean)
-        .Executes(() =>
-        {
-            IEnumerable<Project> nonRevitProjects = GetNonRevitProjectsToBuild();
-            string nonRevitDirPath = Path.Combine(OutputDirectory, "temp");
-            DirectoryInfo nonRevitDir = Directory.CreateDirectory(nonRevitDirPath);
-            foreach (Project nonRevitProject in nonRevitProjects)
-            {
-                try
-                {
-                    DotNetBuild(_ => _
-                        .SetProjectFile(nonRevitProject)
-                        .SetConfiguration(Configuration.Debug)
-                        .SetOutputDirectory(nonRevitDir.FullName));
-                }
-                catch
-                {
-                    // keep try/catch until figuring out what project/why it's breaking
-                }
-            }
-        });
-
-    Target CopyToAddinDirectory => _ => _
-        .Executes(() =>
-        {
-            string commonPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-            string pcAddinPath = Path.Combine(commonPath, $@"Autodesk\\Revit\Addins");
-
-            // 2021
-            string outputPath2021 = Path.Combine(OutputDirectory, "2021");
-            if (Directory.Exists(outputPath2021))
-            {
-                string pcAddinPath2021 = Path.Combine(pcAddinPath, $@"2021");
-                CopyFilesRecursively(outputPath2021, pcAddinPath2021);
-            }
-            // 2022
-            string outputPath2022 = Path.Combine(OutputDirectory, "2022");
-            if (Directory.Exists(outputPath2022))
-            {
-                string pcAddinPath2022 = Path.Combine(pcAddinPath, $@"2022");
-                CopyFilesRecursively(outputPath2022, pcAddinPath2022);
-            }
-            // 2023
-            string outputPath2023 = Path.Combine(OutputDirectory, "2023");
-            if (Directory.Exists(outputPath2023))
-            {
-                string pcAddinPath2023 = Path.Combine(pcAddinPath, $@"2023");
-                CopyFilesRecursively(outputPath2023, pcAddinPath2023);
-            }
-        });
 
     void CompileByVersion(string revitVersion)
     {
-        string nonRevitDirPath = Path.Combine(OutputDirectory, "temp");
+        string nonRevitDirPath = Path.Combine(OutputDirectory, "UI");
         if (!Directory.Exists(nonRevitDirPath))
         {
             throw new Exception("other dll directory doesn't exist");
         }
 
         string versionDirPath = BuildRevitProject(revitVersion);
-        string nestedDllDirPath = Path.Combine(versionDirPath, Solution.Name);
+        string nestedDllDirPath = Path.Combine(versionDirPath, Solution.Name,"UI");
         CopyFilesRecursively(nonRevitDirPath, nestedDllDirPath);
 
         CreateAddinManifest(revitVersion);

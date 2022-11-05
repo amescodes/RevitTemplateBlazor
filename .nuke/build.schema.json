@@ -71,6 +71,9 @@
               "CompileAll",
               "CompileOther",
               "CopyToAddinDirectory",
+              "Debug2021",
+              "Debug2022",
+              "Debug2023",
               "Restore"
             ]
           }
@@ -92,6 +95,9 @@
               "CompileAll",
               "CompileOther",
               "CopyToAddinDirectory",
+              "Debug2021",
+              "Debug2022",
+              "Debug2023",
               "Restore"
             ]
           }

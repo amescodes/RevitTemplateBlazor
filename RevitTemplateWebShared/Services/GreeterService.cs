@@ -18,7 +18,7 @@ namespace RevitTemplateWeb.Services
         {
             return Task.FromResult(new HelloReply
             {
-                Message = "Hello " + request.Name
+                Message = "BITCH Hello " + request.Name
             });
         }
     }
