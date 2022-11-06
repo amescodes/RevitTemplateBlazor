@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Grpc.Core;
-using GrpcGreeter;
+using GrpcRevitRunner;
+using Newtonsoft.Json.Linq;
+using RevitTemplateWeb.Core;
 using RevitTemplateWeb.Services;
+using RevitTemplateWebShared.Services;
 
 namespace RevitTemplateWeb
 {
@@ -19,7 +23,7 @@ namespace RevitTemplateWeb
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            //TaskDialog.Show("tada!", "bada bing bada boom");
+            Revit.Async.RevitTask.Initialize(commandData.Application);
 
             //// if the browser window/process is already open, activate it instead of opening a new process 
             //if (MessageHandler.browser_pid != 0)
@@ -29,7 +33,7 @@ namespace RevitTemplateWeb
 
             //    // try to activate the existing instance
             //    Process[] processes = Process.GetProcesses();
-                
+
             //    foreach (Process p in processes)
             //    {
             //        if (p.Id == MessageHandler.browser_pid)
@@ -40,23 +44,37 @@ namespace RevitTemplateWeb
             //        }
             //    }
             //}
-            
+
+            Assembly assembly = Assembly.GetExecutingAssembly();
+
+            // make command runner dictionary for translating grpc messages to revit actions
+            RevitCommandRunnerService revitCommandRunnerService = new RevitCommandRunnerService(new RevitCommandRunner());
+            Type[] exportedTypes = assembly.GetExportedTypes();
+            foreach (Type t in exportedTypes)
+            {
+                MethodInfo[] methods = t.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+                foreach (MethodInfo method in methods)
+                {
+                    if (method.GetCustomAttribute<RevitCommandAttribute>() is not RevitCommandAttribute revitCommandAttribute)
+                    {
+                        continue;
+                    }
+
+                    revitCommandRunnerService.RevitRunnerCommandDictionary.Add(revitCommandAttribute.CommandToRun, method);
+                }
+            }
+
+            // start grpc server
             Server server = new Server
             {
-                Services = { Greeter.BindService(new GreeterService(null)) },
+                Services = { RevitRunner.BindService(revitCommandRunnerService) },
                 Ports = { new ServerPort("localhost", 7287, ServerCredentials.Insecure) }
             };
             server.Start();
 
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            string assemblyDllPath = assembly.Location.Replace($"{assembly.ManifestModule.Name}","UI");
-//#if RELEASE
-//            string uiProcessPath = Path.Combine(Assembly.GetAssembly(typeof(OpenUIExtCommand)).Location, "UI\\RevitTemplateWeb.UI.exe");
-//#else
-//            string uiProcessPath = "C:\\Users\\amesh\\source\\repos\\RevitTemplate-amescodes\\RevitTemplateWeb.UI\\bin\\Debug\\net6.0\\RevitTemplateWeb.UI.exe";
-//#endif
+            string assemblyDllPath = assembly.Location.Replace($"{assembly.ManifestModule.Name}", "UI");
+            string uiProcessPath = Path.Combine(assemblyDllPath, "gRPC.Client.exe");
 
-            string uiProcessPath = Path.Combine(assemblyDllPath,"gRPC.Client.exe");
             // execute the browser window process
             Process process = new Process();
             process.StartInfo.FileName = uiProcessPath;
@@ -66,7 +84,7 @@ namespace RevitTemplateWeb
             //MessageHandler.browser_pid = process.Id; // grab the PID so we can kill the process if required;
 
             //server.ShutdownAsync().Wait();
-        
+
             return Result.Succeeded;
         }
     }

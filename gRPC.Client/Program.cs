@@ -1,6 +1,8 @@
 ﻿using System;
 using Grpc.Core;
-using GrpcGreeter;
+using GrpcRevitRunner;
+using Newtonsoft.Json;
+using RevitTemplateWeb.Core;
 
 namespace gRPC.Client
 {
@@ -10,11 +12,14 @@ namespace gRPC.Client
         {
             Channel channel = new Channel("127.0.0.1:7287", ChannelCredentials.Insecure);
 
-            var client = new Greeter.GreeterClient(channel);
-            String user = "you";
+            var client = new RevitRunner.RevitRunnerClient(channel);
 
-            var reply = client.SayHello(new HelloRequest { Name = user });
-            Console.WriteLine("Greeting: " + reply.Message);
+            string testMessage = "howdy pardner!";
+            bool testBool = false;
+            object[] inputArray = new object[] { testMessage, testBool };
+            string inputAsJsonString = JsonConvert.SerializeObject(inputArray);
+            var reply = client.RunCommand(new CommandRequest() { CommandEnum = Commands.ShowTaskDialog.ToString(), CommandInputJson = inputAsJsonString});
+            Console.WriteLine("Greeting: " + reply.CommandOutputJson);
 
             channel.ShutdownAsync().Wait();
             Console.WriteLine("Press any key to exit...");
