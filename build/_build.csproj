@@ -12,6 +12,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="cleanSolution.bat" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Nuke.Common" Version="6.2.1" />
 	</ItemGroup>
 

@@ -26,10 +26,10 @@ class Build : NukeBuild
     //[GitVersion]
     //readonly GitVersion GitVersion;
 
-    //[Parameter("Configuration to build. Use the Revit version year (2021, 2022, 2023) as a parameter to only build for one version.")]
-    //readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+    static readonly bool IsReleaseBuild = false;
 
-    bool IsReleaseBuild = false;
+    [Parameter("Configuration to build. Use the Revit version year (2021, 2022, 2023) as a parameter to only build for one version.")]
+    readonly Configuration Configuration = IsReleaseBuild ? Configuration.Release : Configuration.Debug;
 
     string OutputDirectory => IsReleaseBuild ? RootDirectory / "release" : RootDirectory / "output";
 
@@ -58,7 +58,7 @@ class Build : NukeBuild
     public static int Main() => Execute<Build>(x => x.CompileAll);
 
     Target Compile2021 => _ => _
-        .DependsOn(CompileOther)
+        .DependsOn(Clean)
         .Executes(() =>
         {
             CompileByVersion("2021");
@@ -69,7 +69,7 @@ class Build : NukeBuild
         .DependsOn(CopyToAddinDirectory);
 
     Target Compile2022 => _ => _
-        .DependsOn(CompileOther)
+        .DependsOn(Clean)
         .Executes(() =>
         {
             CompileByVersion("2022");
@@ -80,7 +80,7 @@ class Build : NukeBuild
         .DependsOn(CopyToAddinDirectory);
 
     Target Compile2023 => _ => _
-        .DependsOn(CompileOther)
+        .DependsOn(Clean)
         .Executes(() =>
         {
             CompileByVersion("2023");
@@ -90,28 +90,30 @@ class Build : NukeBuild
         .DependsOn(Compile2023)
         .DependsOn(CopyToAddinDirectory);
 
-    Target CompileOther => _ => _
-        .DependsOn(Clean)
-        .Executes(() =>
-        {
-            IEnumerable<Project> nonRevitProjects = GetNonRevitProjectsToBuild();
-            string nonRevitDirPath = Path.Combine(OutputDirectory, "UI");
-            DirectoryInfo nonRevitDir = Directory.CreateDirectory(nonRevitDirPath);
-            foreach (Project nonRevitProject in nonRevitProjects)
-            {
-                try
-                {
-                    DotNetBuild(_ => _
-                        .SetProjectFile(nonRevitProject)
-                        .SetConfiguration(Configuration.Debug)
-                        .SetOutputDirectory(nonRevitDir.FullName));
-                }
-                catch
-                {
-                    // keep try/catch until figuring out what project/why it's breaking
-                }
-            }
-        });
+    //Target CompileOther => _ => _
+    //    .Executes(() =>
+    //    {
+    //        //IEnumerable<Project> nonRevitProjects = GetNonRevitProjectsToBuild();
+    //        Project uiProject = Solution.GetProject("gRPC.Client");
+    //        string nonRevitDirPath = Path.Combine(OutputDirectory, "UI");
+    //        DirectoryInfo nonRevitDir = Directory.CreateDirectory(nonRevitDirPath);
+
+    //        DotNetBuild(_ => _
+    //            .SetProjectFile(uiProject)
+    //            .SetConfiguration(Configuration)
+    //            .SetOutputDirectory(nonRevitDir.FullName));
+    //        //foreach (Project nonRevitProject in nonRevitProjects)
+    //        //{
+    //        //    try
+    //        //    {
+                    
+    //        //    }
+    //        //    catch
+    //        //    {
+    //        //        // keep try/catch until figuring out what project/why it's breaking
+    //        //    }
+    //        //}
+    //    });
 
     Target CopyToAddinDirectory => _ => _
         .Executes(() =>
@@ -196,30 +198,17 @@ class Build : NukeBuild
         {
             DotNetRestore();
         });
-
-    //Target CreateAddinManifest => _ => _
-    //    .Executes(() =>
-    //    {
-
-    //    });
-
+    
     Target CompileAll => _ => _
         .DependsOn(Compile2021)
         .DependsOn(Compile2022)
         .DependsOn(Compile2023);
-
-
+    
     void CompileByVersion(string revitVersion)
     {
-        string nonRevitDirPath = Path.Combine(OutputDirectory, "UI");
-        if (!Directory.Exists(nonRevitDirPath))
-        {
-            throw new Exception("other dll directory doesn't exist");
-        }
-
         string versionDirPath = BuildRevitProject(revitVersion);
-        string nestedDllDirPath = Path.Combine(versionDirPath, Solution.Name,"UI");
-        CopyFilesRecursively(nonRevitDirPath, nestedDllDirPath);
+        //string nestedDllDirPath = Path.Combine(versionDirPath, Solution.Name,"UI");
+        //CopyFilesRecursively(nonRevitDirPath, nestedDllDirPath);
 
         CreateAddinManifest(revitVersion);
     }
@@ -237,35 +226,17 @@ class Build : NukeBuild
 
         string nestedDllDirPath = Path.Combine(versionDirPath, Solution.Name);
         DirectoryInfo nestedDllDir = Directory.CreateDirectory(nestedDllDirPath);
-
-        Configuration config = Configuration.Debug;
-        switch (revitVersion)
-        {
-            case "2021":
-                {
-                    config = Configuration.Revit2021;
-                    break;
-                }
-            case "2022":
-                {
-                    config = Configuration.Revit2022;
-                    break;
-                }
-            case "2023":
-                {
-                    config = Configuration.Revit2023;
-                    break;
-                }
-            default:
-                {
-                    break;
-                }
-        }
-
+        
         DotNetBuild(_ => _
             .SetProjectFile(revitProject)
-            .SetConfiguration(config)
+            .SetConfiguration(Configuration)
             .SetFramework(revitProject.GetProperty("Framework"))
+            .SetOutputDirectory(nestedDllDir.FullName));
+
+        Project uiProject = Solution.GetProject("gRPC.Client");
+        DotNetBuild(_ => _
+            .SetProjectFile(uiProject)
+            .SetConfiguration(Configuration)
             .SetOutputDirectory(nestedDllDir.FullName));
 
         return versionDirPath;
