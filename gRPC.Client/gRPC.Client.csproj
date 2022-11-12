@@ -6,21 +6,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Google.Protobuf" Version="3.21.9" />
-		<PackageReference Include="Grpc.Core" Version="2.46.5" />
-		<PackageReference Include="Grpc.Tools" Version="2.50.0">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+		<!--<PackageReference Include="Synapse" Version="0.1.1-alpha0016" />-->
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\RevitTemplateWeb.Core\RevitTemplateWeb.Core.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Protobuf Include="..\Protos\greet.proto" GrpcServices="Client" Link="Protos\greet.proto" />
+		<ProjectReference Include="..\..\Synapse\Synapse.Client\Synapse.Client.csproj" />
+		<ProjectReference Include="..\RevitTemplateWeb.Core\RevitTemplateWeb.Core.csproj" />
 	</ItemGroup>
 
 </Project>

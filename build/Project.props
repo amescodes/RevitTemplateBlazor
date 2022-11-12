@@ -24,33 +24,16 @@
 		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
-	<!--<PropertyGroup>
-    -->
-	<!-- Override 'OutputPath' to Debug/Release + Revit version -->
-	<!--
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <OutputPath>.\bin\$(Configuration)\$(RevitVersion)</OutputPath>
-    <OutputPath Condition="$(Configuration) != 'Debug' And $(Configuration) != 'Release' ">.\bin\$(Configuration)</OutputPath>
-  </PropertyGroup>-->
-
 	<ItemGroup>
 		<PackageReference Include="Autodesk.Revit.SDK" Version="$(RevitVersion).*" />
 		<PackageReference Include="Revit.Async" Version="2.0.1" />
-		<PackageReference Include="Google.Protobuf" Version="3.21.9" />
-		<PackageReference Include="Grpc.Core" Version="2.46.5" />
-		<PackageReference Include="Grpc.Tools" Version="2.50.0">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Newtonsoft.Json" Version="*" />
+		<!--<PackageReference Include="Synapse.Revit" Version="0.1.1-alpha0016" />-->
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\Synapse\Synapse.Revit\Synapse.Revit.csproj" />
 		<ProjectReference Include="..\RevitTemplateWeb.Core\RevitTemplateWeb.Core.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Protobuf Include="..\Protos\greet.proto" GrpcServices="Server" Link="Protos\greet.proto"/>
 	</ItemGroup>
 
 </Project>

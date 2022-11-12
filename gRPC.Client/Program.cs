@@ -1,8 +1,10 @@
 ﻿using System;
-using Grpc.Core;
-using GrpcRevitRunner;
-using Newtonsoft.Json;
+
 using RevitTemplateWeb.Core;
+
+using Synapse;
+
+using Newtonsoft.Json;
 
 namespace gRPC.Client
 {
@@ -10,19 +12,25 @@ namespace gRPC.Client
     {
         static void Main(string[] args)
         {
-            Channel channel = new Channel("127.0.0.1:7287", ChannelCredentials.Insecure);
+            // port number is passed here in the command line argument
+            int port = int.Parse(args[0]);
 
-            var client = new RevitRunner.RevitRunnerClient(channel);
+            SynapseClient synapseClient = SynapseClient.StartSynapseClient(port);
 
             string testMessage = "howdy pardner!";
             bool testBool = false;
             object[] inputArray = new object[] { testMessage, testBool };
             string inputAsJsonString = JsonConvert.SerializeObject(inputArray);
-            var reply = client.RunCommand(new CommandRequest() { CommandEnum = Commands.ShowTaskDialog.ToString(), CommandInputJson = inputAsJsonString});
-            Console.WriteLine("Greeting: " + reply.CommandOutputJson);
 
-            channel.ShutdownAsync().Wait();
+            //! synapse revit command!
+            var reply = synapseClient.DoRevit(new SynapseRequest() { MethodId = (int)Commands.ShowTaskDialogTest, MethodInputJson = inputAsJsonString });
+
+            Console.WriteLine("Greeting: " + reply.MethodOutputJson);
+
+            synapseClient.Shutdown();
+
             Console.WriteLine("Press any key to exit...");
-            Console.ReadKey();        }
+            Console.ReadKey();
+        }
     }
 }
