@@ -92,14 +92,22 @@ class Build : NukeBuild
     Target CompileUI => _ => _
         .Executes(() =>
         {
-            Project uiProject = Solution.GetProject("gRPC.Client");
+            //Project uiProject = Solution.GetProject("gRPC.Client");
+            Project uiProject = Solution.GetProject("RevitTemplateWeb.UI");
             string nonRevitDirPath = Path.Combine(OutputDirectory, "UI");
             DirectoryInfo nonRevitDir = Directory.CreateDirectory(nonRevitDirPath);
 
-            DotNetBuild(_ => _
-                .SetProjectFile(uiProject)
+            DotNetPublish(_=>_
+                .SetProject(uiProject)
+                .SetFramework(uiProject.GetProperty("TargetFramework"))
                 .SetConfiguration(Configuration)
-                .SetOutputDirectory(nonRevitDir.FullName));
+                .SetOutput(nonRevitDir.FullName));
+
+            //DotNetBuild(_ => _
+            //    .SetProjectFile(uiProject)
+            //    .SetFramework(uiProject.GetProperty("TargetFramework"))
+            //    .SetConfiguration(Configuration)
+            //    .SetOutputDirectory(nonRevitDir.FullName));
         });
 
     Target CopyToAddinDirectory => _ => _
@@ -230,7 +238,7 @@ class Build : NukeBuild
         DotNetBuild(_ => _
             .SetProjectFile(revitProject)
             .SetConfiguration(Configuration)
-            .SetFramework(revitProject.GetProperty("Framework"))
+            .SetFramework(revitProject.GetProperty("TargetFramework"))
             .SetOutputDirectory(nestedDllDir.FullName));
 
         return versionDirPath;

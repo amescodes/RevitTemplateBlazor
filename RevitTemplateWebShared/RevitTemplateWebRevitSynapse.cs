@@ -15,7 +15,7 @@ namespace RevitTemplateWebShared.Services
 {
     public class RevitTemplateWebSynapse : IRevitSynapse
     {
-        public string ProcessPath => Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath)!,"UI", "gRPC.Client.exe");
+        public string ProcessPath => Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath)!,"UI", "RevitTemplateWeb.UI.exe");
 
         [SynapseRevitMethod((int)Commands.ShowTaskDialogTest, typeof(string), typeof(string), typeof(bool))]
         public string ShowTaskDialogTest(string message, bool testBool)
