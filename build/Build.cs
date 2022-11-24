@@ -17,7 +17,6 @@ using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
-
 class Build : NukeBuild
 {
     [Solution]
@@ -33,7 +32,8 @@ class Build : NukeBuild
 
     string OutputDirectory => IsReleaseBuild ? RootDirectory / "release" : RootDirectory / "output";
 
-    public Guid ClientId => new Guid("513061CC-801C-41B1-BD00-887E5493EA3C");
+    //public Guid ClientId => new Guid("513061CC-801C-41B1-BD00-887E5493EA3C");
+    public Guid ClientId => new Guid("29A04CA9-9A79-41BF-9268-5D3A293A605C");
     public string AppName => "Revit Addin Template - Web";
     public string ExternalAppClassName => "RevitTemplateWeb.ExtApp"; //? potential to automate
     
@@ -58,7 +58,7 @@ class Build : NukeBuild
     public static int Main() => Execute<Build>(x => x.CompileAll);
 
     Target Compile2021 => _ => _
-        .DependsOn(Clean)
+        .DependsOn(CompileUI)
         .Executes(() =>
         {
             CompileByVersion("2021");
@@ -69,7 +69,7 @@ class Build : NukeBuild
         .DependsOn(CopyToAddinDirectory);
 
     Target Compile2022 => _ => _
-        .DependsOn(Clean)
+        .DependsOn(CompileUI)
         .Executes(() =>
         {
             CompileByVersion("2022");
@@ -90,30 +90,26 @@ class Build : NukeBuild
         .DependsOn(Compile2023)
         .DependsOn(CopyToAddinDirectory);
 
-    //Target CompileOther => _ => _
-    //    .Executes(() =>
-    //    {
-    //        //IEnumerable<Project> nonRevitProjects = GetNonRevitProjectsToBuild();
-    //        Project uiProject = Solution.GetProject("gRPC.Client");
-    //        string nonRevitDirPath = Path.Combine(OutputDirectory, "UI");
-    //        DirectoryInfo nonRevitDir = Directory.CreateDirectory(nonRevitDirPath);
+    Target CompileUI => _ => _
+        .Executes(() =>
+        {
+            //Project uiProject = Solution.GetProject("gRPC.Client");
+            Project uiProject = Solution.GetProject("RevitTemplateWeb.UI");
+            string nonRevitDirPath = Path.Combine(OutputDirectory, "UI");
+            DirectoryInfo nonRevitDir = Directory.CreateDirectory(nonRevitDirPath);
 
-    //        DotNetBuild(_ => _
-    //            .SetProjectFile(uiProject)
-    //            .SetConfiguration(Configuration)
-    //            .SetOutputDirectory(nonRevitDir.FullName));
-    //        //foreach (Project nonRevitProject in nonRevitProjects)
-    //        //{
-    //        //    try
-    //        //    {
-                    
-    //        //    }
-    //        //    catch
-    //        //    {
-    //        //        // keep try/catch until figuring out what project/why it's breaking
-    //        //    }
-    //        //}
-    //    });
+            DotNetPublish(_=>_
+                .SetProject(uiProject)
+                .SetFramework(uiProject.GetProperty("TargetFramework"))
+                .SetConfiguration(Configuration)
+                .SetOutput(nonRevitDir.FullName));
+
+            //DotNetBuild(_ => _
+            //    .SetProjectFile(uiProject)
+            //    .SetFramework(uiProject.GetProperty("TargetFramework"))
+            //    .SetConfiguration(Configuration)
+            //    .SetOutputDirectory(nonRevitDir.FullName));
+        });
 
     Target CopyToAddinDirectory => _ => _
         .Executes(() =>
@@ -198,17 +194,30 @@ class Build : NukeBuild
         {
             DotNetRestore();
         });
-    
+
+    //Target CreateAddinManifest => _ => _
+    //    .Executes(() =>
+    //    {
+
+    //    });
+
     Target CompileAll => _ => _
         .DependsOn(Compile2021)
         .DependsOn(Compile2022)
         .DependsOn(Compile2023);
-    
+
+
     void CompileByVersion(string revitVersion)
     {
+        string nonRevitDirPath = Path.Combine(OutputDirectory, "UI");
+        if (!Directory.Exists(nonRevitDirPath))
+        {
+            throw new Exception("other dll directory doesn't exist");
+        }
+
         string versionDirPath = BuildRevitProject(revitVersion);
-        //string nestedDllDirPath = Path.Combine(versionDirPath, Solution.Name,"UI");
-        //CopyFilesRecursively(nonRevitDirPath, nestedDllDirPath);
+        string nestedDllDirPath = Path.Combine(versionDirPath, Solution.Name,"UI");
+        CopyFilesRecursively(nonRevitDirPath, nestedDllDirPath);
 
         CreateAddinManifest(revitVersion);
     }
@@ -230,13 +239,7 @@ class Build : NukeBuild
         DotNetBuild(_ => _
             .SetProjectFile(revitProject)
             .SetConfiguration(Configuration)
-            .SetFramework(revitProject.GetProperty("Framework"))
-            .SetOutputDirectory(nestedDllDir.FullName));
-
-        Project uiProject = Solution.GetProject("gRPC.Client");
-        DotNetBuild(_ => _
-            .SetProjectFile(uiProject)
-            .SetConfiguration(Configuration)
+            .SetFramework(revitProject.GetProperty("TargetFramework"))
             .SetOutputDirectory(nestedDllDir.FullName));
 
         return versionDirPath;
@@ -251,35 +254,7 @@ class Build : NukeBuild
         string versionDirPath = Path.Combine(OutputDirectory, revitVersion);
         File.WriteAllText(Path.Combine(versionDirPath, addinFileString), finalAddinContents);
     }
-
-    IList<Project> GetNonRevitProjectsToBuild()
-    {
-        IList<Project> projectsToBuild = new List<Project>();
-        foreach (Project project in Solution.AllProjects)
-        {
-            try
-            {
-                if (project.GetProperty("RevitProject") is string isRevitProject &&
-                    isRevitProject.Equals("true") ||
-                    project.Name.Equals("_build") ||
-                    project.Path.Name.EndsWith(".shproj"))
-                {
-                    continue;
-                }
-
-                projectsToBuild.Add(project);
-            }
-            catch
-            {
-                // ignored - there's no TryGetProperty so we wrap
-                // in try/catch for the projects that will def fail
-                projectsToBuild.Add(project);
-            }
-        }
-
-        return projectsToBuild;
-    }
-
+    
     static void CopyFilesRecursively(string sourcePath, string targetPath)
     {
         //Now Create all of the directories

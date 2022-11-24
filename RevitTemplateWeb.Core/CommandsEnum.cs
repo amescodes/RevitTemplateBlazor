@@ -9,6 +9,6 @@ namespace RevitTemplateWeb.Core
     public enum Commands
     {
         Invalid,
-        ShowTaskDialog,
+        GetCurrentDocSiteLocation,
     }
 }

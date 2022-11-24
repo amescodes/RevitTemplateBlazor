@@ -1,0 +1,29 @@
+﻿@using Synapse
+@using Newtonsoft.Json
+@using RevitTemplateWeb.Core
+
+<h1>Counter</h1>
+
+<p>Message from Revit: @revitMessage</p>
+<button class="btn btn-primary" @onclick="ShowRevitTaskDialog">Click me</button>
+
+@code {
+    private string revitMessage = "";
+
+    private void ShowRevitTaskDialog()
+    {
+        revitMessage = "";
+
+        string testMessage = "howdy pardner!";
+        bool testBool = false;
+        object[] inputArray = new object[] { testMessage, testBool };
+        string inputAsJsonString = JsonConvert.SerializeObject(inputArray);
+
+        RevitElementModel revitElementModel = App.SynapseClient?.DoRevit<RevitElementModel>(Commands.GetCurrentDocSiteLocation.ToString(), testMessage,testBool);
+
+    //! synapse revit command!
+        var reply = App.SynapseClient?.DoRevit(new SynapseRequest() { MethodId = Commands.GetCurrentDocSiteLocation.ToString(), MethodInputJson = inputAsJsonString });
+        revitMessage = reply.MethodOutputJson;
+    }
+
+}
