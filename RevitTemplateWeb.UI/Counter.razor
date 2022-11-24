@@ -19,8 +19,10 @@
         object[] inputArray = new object[] { testMessage, testBool };
         string inputAsJsonString = JsonConvert.SerializeObject(inputArray);
 
-        //! synapse revit command!
-        var reply = App.SynapseClient?.DoRevit(new SynapseRequest() { MethodId = (int)Commands.ShowTaskDialogTest, MethodInputJson = inputAsJsonString });
+        RevitElementModel revitElementModel = App.SynapseClient?.DoRevit<RevitElementModel>(Commands.GetCurrentDocSiteLocation.ToString(), testMessage,testBool);
+
+    //! synapse revit command!
+        var reply = App.SynapseClient?.DoRevit(new SynapseRequest() { MethodId = Commands.GetCurrentDocSiteLocation.ToString(), MethodInputJson = inputAsJsonString });
         revitMessage = reply.MethodOutputJson;
     }
 

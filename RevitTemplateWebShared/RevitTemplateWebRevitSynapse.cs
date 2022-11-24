@@ -9,22 +9,32 @@ using RevitTemplateWeb.Core;
 
 using Synapse.Revit;
 
+using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 
 namespace RevitTemplateWebShared.Services
 {
     public class RevitTemplateWebSynapse : IRevitSynapse
     {
+        private UIApplication uiapp;
+
+        public string Id => "394D4D5F-025E-4A08-B564-86E939586017";
         public string ProcessPath => Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath)!,"UI", "RevitTemplateWeb.UI.exe");
 
-        [SynapseRevitMethod((int)Commands.ShowTaskDialogTest, typeof(string), typeof(string), typeof(bool))]
-        public string ShowTaskDialogTest(string message, bool testBool)
+        public RevitTemplateWebSynapse(UIApplication uiapp)
+        {
+            this.uiapp = uiapp;
+        }
+
+        [SynapseRevitMethod(nameof(Commands.GetCurrentDocSiteLocation))]
+        public object GetCurrentDocSiteLocation(string message, bool testBool)
         {
             return Revit.Async.RevitTask.RunAsync(() =>
             {
-                TaskDialog.Show("received bool: " + testBool, message);
+                //TaskDialog.Show("received bool: " + testBool, message);
+                SiteLocation siteLocation = uiapp.ActiveUIDocument.Document.SiteLocation;
 
-                return "received!";
+                return new RevitElementModel(siteLocation.Id.IntegerValue,siteLocation.PlaceName);
             }).Result;
 
         }

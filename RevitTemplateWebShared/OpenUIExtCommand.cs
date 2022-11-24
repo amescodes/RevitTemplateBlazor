@@ -21,15 +21,23 @@ namespace RevitTemplateWeb
     [Regeneration(RegenerationOption.Manual)]
     public class OpenUIExtCommand : IExternalCommand
     {
-        private SynapseRevitService synapseRevitService;
+        private static SynapseProcess process;
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             Revit.Async.RevitTask.Initialize(commandData.Application);
+            SynapseRevitService.Initialize();
+
+            if (process != null &&
+                process.IsOpen())
+            {
+                process.ActivateProcess();
+                return Result.Succeeded;
+            }
 
             // make command runner dictionary for translating grpc messages to revit actions
-            synapseRevitService = SynapseRevitService.StartSynapseRevitService(new RevitTemplateWebSynapse());
-            synapseRevitService.StartProcess();
+            process = SynapseRevitService.RegisterSynapse(new RevitTemplateWebSynapse(commandData.Application));
+            process.Start();
 
             commandData.Application.ApplicationClosing += Application_ApplicationClosing;
 
@@ -38,9 +46,9 @@ namespace RevitTemplateWeb
 
         private void Application_ApplicationClosing(object sender, Autodesk.Revit.UI.Events.ApplicationClosingEventArgs e)
         {
-            synapseRevitService.ShutdownSynapseRevitService();
+            process?.Close();
 
-            UIApplication uiapp = sender as UIApplication;
+            UIControlledApplication uiapp = sender as UIControlledApplication;
             if (uiapp == null)
             {
                 return;

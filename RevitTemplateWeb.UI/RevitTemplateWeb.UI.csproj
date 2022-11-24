@@ -12,10 +12,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="6.0.547" />
+    <PackageReference Include="Synapse" Version="0.1.1-alpha0018" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Synapse\Synapse.Client\Synapse.Client.csproj" />
     <ProjectReference Include="..\RevitTemplateWeb.Core\RevitTemplateWeb.Core.csproj" />
   </ItemGroup>
 
