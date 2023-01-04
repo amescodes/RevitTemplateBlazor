@@ -10,5 +10,6 @@ namespace RevitTemplateWeb.Core
     {
         Invalid,
         GetCurrentDocSiteLocation,
+        ShowTaskDialog,
     }
 }

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
 
 using RevitTemplateWeb.Core;
@@ -19,7 +16,7 @@ namespace RevitTemplateWebShared.Services
         private UIApplication uiapp;
 
         public string Id => "394D4D5F-025E-4A08-B564-86E939586017";
-        public string ProcessPath => Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath)!,"UI", "RevitTemplateWeb.UI.exe");
+        public string ProcessPath => Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath)!, "UI\\RevitTemplateWeb.UI.exe");
 
         public RevitTemplateWebSynapse(UIApplication uiapp)
         {
@@ -27,7 +24,7 @@ namespace RevitTemplateWebShared.Services
         }
 
         [SynapseRevitMethod(nameof(Commands.GetCurrentDocSiteLocation))]
-        public object GetCurrentDocSiteLocation(string message, bool testBool)
+        public object GetCurrentDocSiteLocation()
         {
             return Revit.Async.RevitTask.RunAsync(() =>
             {
@@ -36,7 +33,17 @@ namespace RevitTemplateWebShared.Services
 
                 return new RevitElementModel(siteLocation.Id.IntegerValue,siteLocation.PlaceName);
             }).Result;
+        }
 
+        [SynapseRevitMethod(nameof(Commands.ShowTaskDialog))]
+        public string ShowTaskDialogTest(string message, bool testBool)
+        {
+            return Revit.Async.RevitTask.RunAsync(() =>
+            {
+                TaskDialog.Show("received bool: " + testBool, message);
+
+                return "received!";
+            }).Result;
         }
     }
 }

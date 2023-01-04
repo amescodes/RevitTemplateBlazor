@@ -13,6 +13,7 @@ using Nuke.Common.Tooling;
 using Nuke.Common.Utilities.Collections;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
+using Nuke.Common.Utilities;
 using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
@@ -32,15 +33,13 @@ class Build : NukeBuild
 
     string OutputDirectory => IsReleaseBuild ? RootDirectory / "release" : RootDirectory / "output";
 
-    //public Guid ClientId => new Guid("513061CC-801C-41B1-BD00-887E5493EA3C");
     public Guid ClientId => new Guid("29A04CA9-9A79-41BF-9268-5D3A293A605C");
     public string AppName => "Revit Addin Template - Web";
     public string ExternalAppClassName => "RevitTemplateWeb.ExtApp"; //? potential to automate
     
     public string RevitVendorId => "AMES_CODES";
     public string RevitVendorDescription => "ames.codes";
-
-    //string relativeDllLocation = "";
+    
     public string AddinFileContents => $@"<?xml version=""1.0"" encoding=""utf-8""?>
 <RevitAddIns>
   <AddIn Type=""Application"">
@@ -101,14 +100,11 @@ class Build : NukeBuild
             DotNetPublish(_=>_
                 .SetProject(uiProject)
                 .SetFramework(uiProject.GetProperty("TargetFramework"))
+                .SetRuntime("win10-x64")
+                .SetSelfContained(false)
+                //.SetPublishSingleFile(true)
                 .SetConfiguration(Configuration)
                 .SetOutput(nonRevitDir.FullName));
-
-            //DotNetBuild(_ => _
-            //    .SetProjectFile(uiProject)
-            //    .SetFramework(uiProject.GetProperty("TargetFramework"))
-            //    .SetConfiguration(Configuration)
-            //    .SetOutputDirectory(nonRevitDir.FullName));
         });
 
     Target CopyToAddinDirectory => _ => _
@@ -155,7 +151,7 @@ class Build : NukeBuild
             {
                 Directory.Delete(pcAddinPath2021,true);
 
-                string addinFile2021 = Path.Combine(pcAddinPath, $@"2021\\{Solution.Name}.addin");
+                string addinFile2021 = pcAddinPath2021.Append(".addin");
                 if (File.Exists(addinFile2021))
                 {
                     File.Delete(addinFile2021);
@@ -167,7 +163,7 @@ class Build : NukeBuild
             {
                 Directory.Delete(pcAddinPath2022,true);
 
-                string addinFile2022 = Path.Combine(pcAddinPath, $@"2022\\{Solution.Name}.addin");
+                string addinFile2022 = pcAddinPath2022.Append(".addin");
                 if (File.Exists(addinFile2022))
                 {
                     File.Delete(addinFile2022);
@@ -180,7 +176,7 @@ class Build : NukeBuild
             {
                 Directory.Delete(pcAddinPath2023,true);
 
-                string addinFile2023 = Path.Combine(pcAddinPath, $@"2023\\{Solution.Name}.addin");
+                string addinFile2023 = pcAddinPath2023.Append(".addin");
                 if (File.Exists(addinFile2023))
                 {
                     File.Delete(addinFile2023);
@@ -194,13 +190,7 @@ class Build : NukeBuild
         {
             DotNetRestore();
         });
-
-    //Target CreateAddinManifest => _ => _
-    //    .Executes(() =>
-    //    {
-
-    //    });
-
+    
     Target CompileAll => _ => _
         .DependsOn(Compile2021)
         .DependsOn(Compile2022)
