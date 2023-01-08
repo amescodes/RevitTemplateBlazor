@@ -15,7 +15,7 @@
         //! synapse revit command!
         RevitElementModel revitElementModel = null;
         string? response = App.SynapseClient?.TryDoRevit<RevitElementModel>(Commands.GetCurrentDocSiteLocation.ToString(), out revitElementModel);
-
+        
         revitMessage = revitElementModel?.Name ?? response ?? string.Empty;
     }
 

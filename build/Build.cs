@@ -33,7 +33,7 @@ class Build : NukeBuild
 
     string OutputDirectory => IsReleaseBuild ? RootDirectory / "release" : RootDirectory / "output";
 
-    public Guid ClientId => new Guid("29A04CA9-9A79-41BF-9268-5D3A293A605C");
+    public Guid ClientId => new Guid("A9243C0F-1B03-4A3B-A09A-35A1F3338EE9");
     public string AppName => "Revit Addin Template - Web";
     public string ExternalAppClassName => "RevitTemplateWeb.ExtApp"; //? potential to automate
     
